@@ -1,4 +1,6 @@
 /*
+//迭代器
+
 #include <iostream>
 #include <vector>
 
@@ -51,6 +53,8 @@ template <typename T> void printVector(const vector<T>& integers2)
 }
 
 
+
+//Vector
 
 #include <iostream>
 #include <array>
@@ -111,6 +115,8 @@ int main()
 
 
 
+
+//List
 
 #include <iostream>
 #include <list>
@@ -207,6 +213,10 @@ template<typename T> void printList(const list<T>& listRef)
 }
 
 
+
+
+//deque
+
 #include <iostream>
 #include <deque>
 #include <algorithm>
@@ -239,7 +249,11 @@ int main()
 	copy(values.cbegin(), values.cend(), output);
 }
 
-*/
+
+
+
+//multiset
+
 #include <array>
 #include <iostream>
 #include <set>
@@ -263,7 +277,9 @@ int main()
 	intMultiset.insert(15);
 	cout << "After inserts, there are " << intMultiset.count(15)
 		 << " values of 15 in the multiset\n\n";
-
+	// 作用是在multiset中查找值为15的元素。如果找到，
+	// 则返回指向该元素的迭代器。如果multiset中不存在值为15的元素，
+	// 函数会返回指向multiset末尾的迭代器。
 	auto result = intMultiset.find(15);
 
 	if (result != intMultiset.end())
@@ -277,15 +293,70 @@ int main()
 	{
 		cout << "did not find value 20\n";
 	}
-
+	// 按照顺序的方式插入
 	intMultiset.insert(a.cbegin(), a.cend());
 	cout << "\nAfter insert, intmultiset contains: \n";
+	// 用copy来输出
 	copy(intMultiset.cbegin(), intMultiset.cend(), output);
 
-	cout << "\n\n lower bound of 22: " << *(intMultiset.upper_bound(22));
-
+	// 返回一个迭代器，指向第一个不小于22的元素，然后通过解引用操作 * 获取该元素的值。
+	// 返回一个迭代器，指向第一个大于22的元素，然后通过解引用操作 * 获取该元素的值。
+	cout << "\n\n lower bound of 22: " << *(intMultiset.lower_bound(22));
+	cout << "\nupper bound of 22: " << *(intMultiset.upper_bound(22));
+	// equal_range函数返回一个由两个迭代器组成的pair类，
+	// 它们分别代表了在multiset中值等于22的元素的起始位置和结束位置。
 	auto p = intMultiset.equal_range(22);
-
+	// p.first 是第一个不小于22的元素的迭代器。
+	// p.second 是第一个大于22的元素的迭代器
 	cout << "\n\nequal range of 22:"
 		 << "\n   lower bound: "
+		 << *(p.first) << "\n    upper bound: " << *(p.second);
+	cout << endl;
 }
+
+
+
+
+
+// Set
+
+#include <iostream>
+#include <array>
+#include <set>
+#include <algorithm>
+#include <iterator>
+
+using namespace std;
+
+int main()
+{
+	const size_t SIZE = 5;
+	array<double, SIZE> a = {2.1, 4.2, 9.5, 2.1, 3.7};
+	// less是按照递增顺序的
+	set<double, less<double>> doubleSet(a.begin(), a.end());
+	ostream_iterator<double> output(cout, " ");
+
+	cout << "doubleSet contains: ";
+	// 需要修改所以不是cbegin()
+	copy(doubleSet.begin(), doubleSet.end(), output);
+
+	// 这个insert操作返回一个包含两个元素的pair：
+	// p.first是一个迭代器，指向set中值为13.8的元素的位置。
+	// p.second是一个bool值，如果成功插入了元素，则为true；
+	// 如果set中已经存在值为13.8的元素，就不会进行插入操作，此时为false。
+	auto p = doubleSet.insert(13.8);
+	cout << "\n\n"
+		 << *(p.first)
+		 << (p.second ? "was" : "was not") << " inserrted";
+	cout << "\ndoubleSet contains: 	";
+	copy(doubleSet.begin(), doubleSet.end(), output);
+
+	p = doubleSet.insert(9.5);
+	cout << "\n\n"
+		 << *(p.first)
+		 << (p.second ? "was" : "was not") << " inserted";
+	cout << "doubleSet coontains: ";
+	copy(doubleSet.begin(), doubleSet.end(), output);
+	cout << endl;
+}
+*/

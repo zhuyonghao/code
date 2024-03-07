@@ -400,7 +400,8 @@ int main()
 
 	cout << endl;
 }
-*/
+
+
 
 // Map关联数组
 
@@ -441,3 +442,142 @@ int main()
 
 	cout << endl;
 }
+
+
+
+
+// Stack
+#include <iostream>
+#include <stack>
+#include <list>
+#include <vector>
+
+using namespace std;
+
+template <typename T>
+void pushElements(T &stackRef);
+
+template <typename T>
+void popElements(T &stackRef);
+
+int main()
+{
+	// 使用默认底层容器deque
+	stack<int> intDequeStack;
+
+	// 使用底层容器vector
+	stack<int, vector<int>> intVectorStack;
+
+	// 使用底层容器list
+	stack<int, list<int>> intListStack;
+
+	cout << "Pushing onto intDequeStack: ";
+	pushElements(intDequeStack);
+	cout << "\npushing onto intVectorStack: ";
+	pushElements(intVectorStack);
+	cout << "\npushing onto intListStack: ";
+	pushElements(intListStack);
+	cout << endl;
+
+	cout << "poping from intDequeStack: ";
+	popElements(intDequeStack);
+	cout << "\npoping from intVectorStack: ";
+	popElements(intVectorStack);
+	cout << "\npoping from intListStack: ";
+	popElements(intListStack);
+	cout << endl;
+}
+
+template <typename T>
+void pushElements(T &stackRef)
+{
+	for (int i = 0; i < 10; i++)
+	{
+		stackRef.push(i);
+		cout << stackRef.top() << " ";
+	}
+}
+
+template <typename T>
+void popElements(T &stackRef)
+{
+	while (!stackRef.empty())
+	{
+		cout << stackRef.top() << " ";
+		stackRef.pop();
+	}
+}
+
+
+// queue
+#include <iostream>
+#include <queue>
+
+using namespace std;
+
+int main()
+{
+	// 用底层容器deque实现
+	queue<double> values;
+	// 调用底层容器中的push_back
+	values.push(3.2);
+	values.push(9.8);
+	values.push(5.4);
+
+	cout << "Popping from values: ";
+
+	while (!values.empty())
+	{
+		// 调用底层容器中的front
+		cout << values.front() << " ";
+		// 调用底层容器中的pop_front
+		values.pop();
+	}
+	cout << endl;
+}
+*/
+
+// priority_queue
+#include <iostream>
+#include <queue>
+
+using namespace std;
+
+int main()
+{
+	// 使用底层容器vector
+	priority_queue<double> priorities;
+	// push调用了push_back和heap排序算法
+	priorities.push(3.2);
+	priorities.push(9.8);
+	priorities.push(5.4);
+	// 按照从大到小的顺序
+	cout << "poping from priorities: ";
+	while (!priorities.empty())
+	{
+		// 调用了底层容器的front
+		cout << priorities.top() << " ";
+		// 调用了底层容器的pop_back
+		priorities.pop();
+	}
+	cout << endl;
+}
+
+// bitset  位集合
+/*
+ *容器(container)，迭代器(iterator有着和指针相似的功能，被用于操作容器的元素),
+ *算法(algorithm通过迭代器间接地操作容器元素)是STL三个主要组成部分
+ ************************************************************************
+ *序列容器array, vector, deque, forward_list和list用来描述线性数据结构
+ *非线性的关联容器set, multiset(集合，multiset允许重复元素出现),
+ *map, multimap(映射, multimap允许一个对应多个value)
+ *以及它们的无序版本来描述非线性数据结构
+ ************************************************************************
+ *容器适配器(adapter)stack, queue和priority_queue
+ *没有提供真实的数据结构的实现，也不支持迭代器
+ *用于限制序列容器的操作来实现特定的一些数据结构
+ ************************************************************************
+ *每种算法所要求迭代器类型，若容器支持算法要求的最弱迭代器，容器就可以使用该算法
+ ************************************************************************
+ *bitset类使得创建并像容器那样操作位集合变得非常容易
+ */

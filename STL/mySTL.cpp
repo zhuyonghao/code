@@ -359,4 +359,85 @@ int main()
 	copy(doubleSet.begin(), doubleSet.end(), output);
 	cout << endl;
 }
+
+
+
+
+
+// multimap
+
+#include <iostream>
+#include <map>
+
+using namespace std;
+
+int main()
+{
+	// 按照key排序
+	multimap<int, double, less<int>> pairs;
+
+	cout << "There are currently " << pairs.count(15)
+		 << " pairs with key 15 in the multimap\n";
+	// 同一个键对应多个值
+	pairs.insert(make_pair(15, 2.7));
+	pairs.insert(make_pair(15, 99.3));
+	// 统计Key = 15的次数
+	cout << "After inserts, there are " << pairs.count(15)
+		 << " pairs with key 15\n\n";
+
+	pairs.insert(make_pair(30, 111.11));
+	pairs.insert(make_pair(10, 22.22));
+	pairs.insert(make_pair(25, 33.333));
+	pairs.insert(make_pair(20, 9.345));
+	pairs.insert(make_pair(5, 77.54));
+
+	cout << "Multimap pairs contains: \nkey\tvalue\n";
+
+	for (auto mapItem : pairs)
+	{
+		cout << mapItem.first << "\t" << mapItem.second << "\n";
+	}
+
+	cout << endl;
+}
 */
+
+// Map关联数组
+
+#include <iostream>
+#include <map>
+
+using namespace std;
+
+int main()
+{
+	map<int, double, less<int>> pairs;
+
+	pairs.insert(make_pair(15, 2.7));
+	pairs.insert(make_pair(30, 111.11));
+	pairs.insert(make_pair(5, 1010.1));
+	pairs.insert(make_pair(10, 22.22));
+	pairs.insert(make_pair(25, 33.333));
+	// 一个key对应一个value,所以此时无效
+	pairs.insert(make_pair(20, 9.345));
+	pairs.insert(make_pair(5, 77.54));
+	pairs.insert(make_pair(15, 99.3));
+
+	cout << "pairs contains:\nkey\tvalue\n";
+
+	for (auto mapItem : pairs)
+	{
+		cout << mapItem.first << "\t" << mapItem.second << "\n";
+	}
+	cout << endl;
+
+	pairs[25] = 9999.99; // 存在就修改
+	pairs[40] = 8765.43; // 不存在则插入
+
+	for (auto mapItem : pairs)
+	{
+		cout << mapItem.first << "\t" << mapItem.second << "\n";
+	}
+
+	cout << endl;
+}

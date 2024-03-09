@@ -427,7 +427,7 @@ int main()
      copy(a.cbegin(), a.cend(), output);
      cout << endl;
 }
-*/
+
 
 // copy_backward merge unique reverse
 #include <iostream>
@@ -473,4 +473,102 @@ int main()
      copy(a1.cbegin(), a1.cend(), output);
 
      cout << endl;
+}
+
+
+// inplace_merge unique_copy reverse_copy
+
+#include <iostream>
+#include <algorithm>
+#include <iterator>
+#include <array>
+#include <vector>
+
+using namespace std;
+
+int main()
+{
+     const size_t SIZE = 10;
+     array<int, SIZE> a1 = {1, 3, 5, 7, 9, 1, 3, 5, 7, 9};
+     ostream_iterator<int> output(cout, " ");
+
+     cout << "array a1 contains: ";
+     copy(a1.cbegin(), a1.cend(), output);
+     //合并同一容器中的两个有序的元素序列
+     inplace_merge(a1.begin(), a1.begin() + 5, a1.end());
+
+     cout << "\nAfter inplace_merge, all contains: ";
+     copy(a1.cbegin(), a1.cend(), output);
+
+     vector<int> results1;
+     //back_inserter函数使用vector的push_back成员函数
+     //在这个vector对象的末端插入元素
+     unique_copy(a1.cbegin(), a1.cend(), back_inserter(results1));
+     cout << "After unique_copy results1 contains: ";
+     copy(results1.cbegin(), results1.cend(), output);
+
+     vector<int> results2;
+
+     reverse_copy(a1.cbegin(), a1.cend(), back_inserter(results2));
+     cout << "\nAfter reverse_copy, results2 contains: ";
+     copy(results2.cbegin(), results2.cend(), output);
+     cout << endl;
+}
+*/
+
+// include set_difference set_intersection
+// set_symmetric(对称)_difference set_union(联合)
+
+#include <iostream>
+#include <algorithm>
+#include <iterator>
+#include <array>
+
+using namespace std;
+
+int main()
+{
+     const size_t SIZE1 = 10, SIZE2 = 5, SIZE3 = 20;
+     array<int, SIZE1> a1 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+     array<int, SIZE2> a2 = {4, 5, 6, 7, 8};
+     array<int, SIZE3> a3 = {4, 5, 6, 11, 15};
+     ostream_iterator<int> output(cout, " ");
+
+     cout << "a1 contains: ";
+     copy(a1.cbegin(), a1.cend(), output);
+     cout << "\na2 contains: ";
+     copy(a2.cbegin(), a2.cend(), output);
+     cout << "a3 contains: ";
+     copy(a3.cbegin(), a3.cend(), output);
+     // 集合A是否包含集合B
+     if (includes(a1.cbegin(), a1.cend(), a2.cbegin(), a2.cend()))
+          cout << "\n\na1 includes a2";
+     else
+          cout << "\n\na1 does not include a2";
+
+     if (includes(a1.cbegin(), a1.cend(), a3.cbegin(), a3.cend()))
+          cout << "\n\na1 includes a3";
+     else
+          cout << "\n\na1 does not include a3";
+     // 找两集合不同
+     array<int, SIZE1> difference;
+     auto result1 = set_difference(a1.cbegin(), a1.cend(), a2.cbegin(),
+                                   a2.cend(), difference.begin());
+     cout << "\n\nset_difference of a1 and a2 is: ";
+     copy(difference.begin(), result1, output);
+     // 集合交叉
+     array<int, SIZE1> intersection;
+     auto result2 = set_intersection(a1.cbegin(), a1.cend(), a2.cbegin(),
+                                     a2.cend(), intersection.begin());
+     cout << "\n\nset_intersection of a1 and a2 is: ";
+     copy(intersection.begin(), result2, output);
+
+     array<int, SIZE1 + SIZE2> symmetric_difference;
+
+     auto result3 = set_symmetric_difference(a1.cbegin(), a1.cend(),
+                                             a3.cbegin(), a3.cend(), symmetric_difference.begin());
+     cout << "\n\nset_symmetric_difference of a1 and a3 is: ";
+     copy(symmetric_difference.begin(), result3, output);
+
+     array<int, SIZE3> unionSet;
 }

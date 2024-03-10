@@ -5,7 +5,7 @@
  **************************************************************************
  *每个容器的一个重要部分就是它所支持的迭代器类型，这决定了哪个算法可以应用到容器上，
  *每个以迭代器作为参数的标准库算法，都要求迭代器提供最低限度功能。
- *迭代器：前向迭代器，双向迭代器，随机访问迭代器
+ *迭代器：输入迭代器, 输出迭代器, 前向迭代器，双向迭代器，随机访问迭代器
  */
 
 /*
@@ -514,7 +514,7 @@ int main()
      copy(results2.cbegin(), results2.cend(), output);
      cout << endl;
 }
-*/
+
 
 // include set_difference set_intersection
 // set_symmetric(对称)_difference set_union(联合)
@@ -538,7 +538,7 @@ int main()
      copy(a1.cbegin(), a1.cend(), output);
      cout << "\na2 contains: ";
      copy(a2.cbegin(), a2.cend(), output);
-     cout << "a3 contains: ";
+     cout << "\na3 contains: ";
      copy(a3.cbegin(), a3.cend(), output);
      // 集合A是否包含集合B
      if (includes(a1.cbegin(), a1.cend(), a2.cbegin(), a2.cend()))
@@ -550,7 +550,7 @@ int main()
           cout << "\n\na1 includes a3";
      else
           cout << "\n\na1 does not include a3";
-     // 找两集合不同
+     // 在A集合中，而不在B集合中
      array<int, SIZE1> difference;
      auto result1 = set_difference(a1.cbegin(), a1.cend(), a2.cbegin(),
                                    a2.cend(), difference.begin());
@@ -564,11 +564,160 @@ int main()
      copy(intersection.begin(), result2, output);
 
      array<int, SIZE1 + SIZE2> symmetric_difference;
-
+     // 两个集合不同的集合
      auto result3 = set_symmetric_difference(a1.cbegin(), a1.cend(),
                                              a3.cbegin(), a3.cend(), symmetric_difference.begin());
      cout << "\n\nset_symmetric_difference of a1 and a3 is: ";
      copy(symmetric_difference.begin(), result3, output);
 
      array<int, SIZE3> unionSet;
+     // 两个集合所有的集合
+     auto result4 = set_union(a1.cbegin(), a1.cend(),
+                              a3.cbegin(), a3.cend(), unionSet.begin());
+     cout << "\n\nset_union of a1 and a3 is: ";
+     copy(unionSet.begin(), result4, output);
+     cout << endl;
+}
+
+
+// lower_bound upper_bound equal_range
+// lower_bound不小于
+// upper_bound大于
+// 得到lower_bound和upper_bound一对
+// 用来在有序序列中寻找插入点
+#include <iostream>
+#include <algorithm>
+#include <array>
+#include <iterator>
+
+using namespace std;
+
+int main()
+{
+     const size_t SIZE = 10;
+     array<int, SIZE> a = {2, 2, 4, 4, 4, 6, 6, 6, 6, 8};
+     ostream_iterator<int> output(cout, " ");
+
+     cout << "array a contains:\n";
+     copy(a.cbegin(), a.cend(), output);
+
+     auto lower = lower_bound(a.cbegin(), a.cend(), 6);
+     cout << "\n\nlower bound of 6 is element "
+          << (lower - a.cbegin()) << " of array a";
+
+     auto upper = upper_bound(a.cbegin(), a.cend(), 6);
+     cout << "\nUpper bound of 6 is element "
+          << (upper - a.cbegin()) << " of array a";
+
+     auto eq = equal_range(a.cbegin(), a.cend(), 6);
+     cout << "\nUsing equal_range:\n   Lower bound of 6 is element "
+          << (eq.first - a.cbegin()) << " of array a";
+     cout << "\n   Upper bound of 6 is element "
+          << (eq.second - a.cbegin()) << " of array a";
+     cout << "\n\nUse lower_bound to locate the first point\n"
+          << "at which 5 can be inserted in order";
+
+     lower = lower_bound(a.cbegin(), a.cend(), 5);
+     cout << "\nlower bound of 5 is element "
+          << (lower - a.cbegin()) << " of array a";
+     cout << "\n\nUse upper_bound to locate the last point\n"
+          << "at which 7 can be inserted in order";
+
+     upper = upper_bound(a.cbegin(), a.cend(), 7);
+     cout << "\n   Upper bound of 7 is element "
+          << (upper - a.cbegin()) << " of array a";
+     cout << "\n\nUse equal_range to locate the first and\n"
+          << "last point at which 5 can be inserted in order";
+
+     eq = equal_range(a.cbegin(), a.cend(), 5);
+     cout << "\n   Lower bound of 5 is element "
+          << (eq.first - a.cbegin()) << " of array a";
+     cout << "\n   Upper bound of 5 is element "
+          << (eq.second - a.cbegin()) << " of array a" << endl;
+}
+
+
+// push_heap pop_heap make_heap sort_heap
+#include <iostream>
+#include <algorithm>
+#include <array>
+#include <iterator>
+#include <vector>
+using namespace std;
+
+int main()
+{
+     const size_t SIZE = 10;
+     array<int, SIZE> init = {3, 100, 52, 77, 22, 31, 1, 98, 13, 40};
+     array<int, SIZE> a(init);
+     ostream_iterator<int> output(cout, " ");
+
+     cout << "Array a before make_heap:\n";
+     copy(a.cbegin(), a.cend(), output);
+
+     make_heap(a.begin(), a.end());
+     cout << "\nArray a after make_heap:\n";
+     copy(a.cbegin(), a.cend(), output);
+
+     sort_heap(a.begin(), a.end());
+     cout << "\nArray a after sort_heap:\n";
+     copy(a.cbegin(), a.cend(), output);
+
+     cout << "\n\nArray init contains: ";
+     copy(init.cbegin(), init.cend(), output);
+     cout << endl;
+
+     vector<int> v;
+     // 将数组中都元素放入向量中再放入堆中输出
+     // 建堆过程
+     for (size_t i = 0; i < SIZE; ++i)
+     {
+          v.push_back(init[i]);
+          // 此时vector是一个堆
+          push_heap(v.begin(), v.end());
+          cout << "\nv after push_heap(init[" << i << "]): ";
+          copy(v.cbegin(), v.cend(), output);
+     }
+
+     // 出堆的过程
+     // 每次首位元素移到end（）迭代器处
+     // 最后得到从小到大的序列
+     for (size_t j = 0; j < v.size(); ++j)
+     {
+          cout << "\nv after " << v[0] << " popped from heap\n";
+          pop_heap(v.begin(), v.end() - j);
+          copy(v.cbegin(), v.cend(), output);
+     }
+     cout << endl;
+}
+*/
+
+// min max minmax minmax_element
+#include <iostream>
+#include <algorithm>
+#include <array>
+#include <iterator>
+using namespace std;
+
+int main()
+{
+     cout << "The minimum of 12 and 7 is: " << min(12, 7);
+     cout << "\nThe maximum of 12 and 7 is: " << max(12, 7);
+     cout << "\nThe minimum of G and Z is: " << min('G', 'Z');
+     cout << "\nThe maximum of G and Z is: " << max('G', 'Z');
+     // 返回一个pair对象
+     auto result1 = minmax(12, 7);
+     cout << "\n\nThe minimum of 12 and 7 is: " << result1.first
+          << "\nThe maximum of 12 and 7 is: " << result1.second;
+
+     array<int, 10> items = {3, 100, 52, 77, 22, 31, 1, 98, 13, 40};
+     ostream_iterator<int> output(cout, " ");
+
+     cout << "\n\nArray items contains: ";
+     copy(items.cbegin(), items.cend(), output);
+     // 返回pair迭代器
+     auto result2 = minmax_element(items.cbegin(), items.cend());
+     cout << "\nThe minimum element in items is: " << *result2.first
+          << "\nThe maximum element in items is: " << *result2.second
+          << endl;
 }

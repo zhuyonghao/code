@@ -1,3 +1,4 @@
+// 基于List实现类模板Queue
 #include <iostream>
 #include <string>
 using namespace std;
@@ -162,170 +163,73 @@ private:
         return new ListNode<NODETYPE>(value);
     }
 };
-/*
-void instructions()
-{
-    cout << "Enter onr of following:\n"
-         << " 1 to insert at beginning of list\n"
-         << " 2 to insert at end of list\n"
-         << " 3 to delete from beginning of list\n"
-         << " 4 to delete from end of list\n"
-         << " 5 to end list processing\n";
-}
 
-template <typename T>
-void testList(List<T> &listObject, const string &typeName)
-{
-    cout << "Testing a list of " << typeName << " values\n";
-    instructions();
-
-    int choice;
-    T value;
-
-    do
-    {
-        cout << "? ";
-        cin >> choice;
-
-        switch (choice)
-        {
-        case 1:
-            cout << "Enter " << typeName << ": ";
-            cin >> value;
-            listObject.insertAtFront(value);
-            listObject.print();
-            break;
-        case 2:
-            cout << "Enter " << typeName << ": ";
-            cin >> value;
-            listObject.insertAtBack(value);
-            listObject.print();
-            break;
-        case 3:
-            if (listObject.removeFromFront(value))
-                cout << value << " remove from list\n";
-
-            listObject.print();
-            break;
-        case 4:
-            if (listObject.removeFromBack(value))
-                cout << value << " remove from list\n";
-
-            listObject.print();
-            break;
-        }
-    } while (choice < 5);
-    cout << "End list test\n\n";
-}
-
-int main()
-{
-    List<int> integerList;
-    testList(integerList, "integer");
-
-    List<double> doubleList;
-    testList(doubleList, "double");
-}
-*/
-
-/*
-// 基于List继承实现模板类Stack
-template <typename STACKTYPE>
-class Stack : private List<STACKTYPE>
+// delegation委托的方式来分配任务
+template <typename QUEUETYPE>
+class Queue : private List<QUEUETYPE>
 {
 public:
-    // 类模板从属名称
-    // this指针会根据模板参数调用基类的成员函数
-    void push(const STACKTYPE &data)
+    void enqueue(const QUEUETYPE &data)
     {
-        this->insertAtFront(data);
+        this->insertAtBack(data);
     }
 
-    bool pop(STACKTYPE &data)
+    bool dequeue(QUEUETYPE &data)
     {
         return this->removeFromFront(data);
     }
 
-    bool isStackEmpty() const
+    bool isQueueEmpty() const
     {
         return this->isEmpty();
     }
 
-    void printStack() const
+    void printQueue() const
     {
         this->print();
     }
 };
-*/
-
-// 使用List对象组合实现模板类Stack
-template <typename STACKTYPE>
-class Stack
-{
-public:
-    void push(const STACKTYPE &data)
-    {
-        stackList.insertAtFront(data);
-    }
-
-    bool pop(STACKTYPE &data)
-    {
-        return stackList.removeFromFront(data);
-    }
-
-    bool isStackEmpty() const
-    {
-        return stackList.isEmpty();
-    }
-
-    void printStack() const
-    {
-        stackList.print();
-    }
-
-private:
-    List<STACKTYPE> stackList;
-};
 
 int main()
 {
-    Stack<int> intStack;
+    Queue<int> intQueue;
 
-    cout << "processing an integer Stack" << endl;
+    cout << "procession an integer Queue" << endl;
 
     for (int i = 0; i < 3; ++i)
     {
-        intStack.push(i);
-        intStack.printStack();
+        intQueue.enqueue(i);
+        intQueue.printQueue();
     }
 
-    int popInteger;
+    int dequeueInteger;
 
-    while (!intStack.isStackEmpty())
+    while (!intQueue.isQueueEmpty())
     {
-        intStack.pop(popInteger);
-        cout << popInteger << " popped from stack" << endl;
-        intStack.printStack();
+        intQueue.dequeue(dequeueInteger);
+        cout << dequeueInteger << " dequeued" << endl;
+        intQueue.printQueue();
     }
 
-    Stack<double> doubleStack;
+    Queue<double> doubleQueue;
     double value = 1.1;
 
-    cout << "processing a double Stack" << endl;
+    cout << "procession a double Queue" << endl;
 
     for (int j = 0; j < 3; ++j)
     {
-        doubleStack.push(value);
-        doubleStack.printStack();
+        doubleQueue.enqueue(value);
+        doubleQueue.printQueue();
         value += 1.1;
     }
 
-    double popDouble;
+    double dequeueDouble;
 
-    while (!doubleStack.isStackEmpty())
+    while (!doubleQueue.isQueueEmpty())
     {
-        doubleStack.pop(popDouble);
-        cout << popDouble << " popped from stack" << endl;
-        doubleStack.printStack();
+        doubleQueue.dequeue(dequeueDouble);
+        cout << dequeueDouble << " dequeued" << endl;
+        doubleQueue.printQueue();
     }
 }
+// 类中成员函数访问级别默认为private

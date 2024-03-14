@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <iomanip>
 using namespace std;
 
 // 类的前置说明
@@ -11,7 +11,7 @@ class Tree;
 template <typename NODETYPE>
 class TreeNode
 {
-    friend class Tree<TYPENAME>;
+    friend class Tree<NODETYPE>;
 
 public:
     TreeNode(const NODETYPE &d)
@@ -62,7 +62,7 @@ public:
 
 private:
     TreeNode<NODETYPE> *rootPtr;
-
+    // 因为想要改变根节点的值，所以传递的是二级指针
     void insertNodeHelper(TreeNode<NODETYPE> **ptr, const NODETYPE &value)
     {
         if (*ptr == nullptr)
@@ -111,3 +111,48 @@ private:
         }
     }
 };
+
+int main()
+{
+    Tree<int> intTree;
+
+    cout << "Enter 10 integers values:\n";
+
+    for (int i = 0; i < 10; ++i)
+    {
+        int intValue = 0;
+        cin >> intValue;
+        intTree.insertNode(intValue);
+    }
+
+    cout << "\nPreorder traversal\n";
+    intTree.preOrderTraversal();
+
+    cout << "\nInorder traversal\n";
+    intTree.inOrderTraversal();
+
+    cout << "\nPostorder traversal\n";
+    intTree.postOrderTraversal();
+
+    Tree<double> doubleTree;
+
+    cout << fixed << setprecision(1)
+         << "\n\nEnter 10 double values:\n";
+
+    for (int j = 0; j < 10; ++j)
+    {
+        double doubleValue = 0.0;
+        cin >> doubleValue;
+        doubleTree.insertNode(doubleValue);
+    }
+
+    cout << "\nPreorder traversal\n";
+    doubleTree.preOrderTraversal();
+
+    cout << "\nInorder traversal\n";
+    doubleTree.inOrderTraversal();
+
+    cout << "\nPostorder traversal\n";
+    doubleTree.postOrderTraversal();
+    cout << endl;
+}

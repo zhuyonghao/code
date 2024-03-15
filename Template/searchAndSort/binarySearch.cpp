@@ -22,6 +22,7 @@ int binarySearch(const array<T, size> &items, const T &key)
 {
     int low = 0;
     int high = items.size() - 1;
+    // 在某些情况下，为总和加1可以确保中间值偏向于较高的一方
     int middle = (low + high + 1) / 2;
     int location = -1;
 
@@ -48,6 +49,7 @@ int binarySearch(const array<T, size> &items, const T &key)
 
 int main()
 {
+
     default_random_engine engine(static_cast<unsigned int>(time(nullptr)));
     uniform_int_distribution<unsigned int> randomInt(10, 99);
 

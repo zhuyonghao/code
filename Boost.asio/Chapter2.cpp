@@ -290,7 +290,6 @@ int main()
 
     return 0;
 }
-*/
 
 #include <iostream>
 #include <boost/asio.hpp>
@@ -304,4 +303,180 @@ using namespace boost;
 
 struct Session
 {
+    std::shared_ptr<asio::ip::tcp::socket> sock;
+    std::unique_ptr<char[]> buf;
+    std::size_t total_bytes_read;
+    unsigned int buf_size;
 };
+
+// Function used as a callback for
+// asynchronous reading operation.
+// Checks if all data has been read;
+// from the socket and initiates
+// new reading operation if needed.
+void callback(const boost::system::error_code& ec,
+    std::size_t bytes_transferred,
+    std::shared_ptr<Session> s)
+{
+    if (ec.value() != 0)
+    {
+        std::cout << "Error occured! Error code = "
+            << ec.value()
+            << ". Message: " << ec.message();
+
+        return;
+    }
+
+    s->total_bytes_read += bytes_transferred;
+
+    if (s->total_bytes_read == s->buf_size)
+    {
+        return;
+    }
+
+    s->sock->async_read_some(
+        asio::buffer(
+            s->buf.get() +
+            s->total_bytes_read,
+            s->buf_size -
+            s->total_bytes_read),
+        std::bind(callback, std::placeholders::_1,
+            std::placeholders::_2, s));
+}
+
+void readFromSocket(std::shared_ptr<asio::ip::tcp::socket> sock)
+{
+    std::shared_ptr<Session> s(new Session);
+
+    // Step 4 Allocating the buffer.
+    const unsigned int  MESSAGE_SIZE = 7;
+
+    s->buf.reset(new char[MESSAGE_SIZE]);
+    s->total_bytes_read = 0;
+    s->sock = sock;
+    s->buf_size = MESSAGE_SIZE;
+
+    // Step 5. Initiating asynchronous reading operation.
+    s->sock->async_read_some(
+        asio::buffer(s->buf.get(), s->buf_size),
+        std::bind(callback,
+            std::placeholders::_1,
+            std::placeholders::_2,
+            s));
+}
+
+int main()
+{
+    std::string raw_ip_address = "127.0.0.1";
+
+    unsigned short port_num = 3333;
+
+    try
+    {
+        asio::ip::tcp::endpoint
+            ep(asio::ip::address::from_string(raw_ip_address),
+                port_num);
+
+        asio::io_service ios;
+
+        // Step 3. Allocating, opening and connecting a socket.
+        std::shared_ptr<asio::ip::tcp::socket> sock(
+            new asio::ip::tcp::socket(ios, ep.protocol()));
+
+        sock->connect(ep);
+
+        readFromSocket(sock);
+
+        // Step 6.
+        ios.run();
+    }
+
+    catch (system::system_error &e)
+    {
+        std::cout << "Error code! Error code = " << e.code()
+            << ". Message: " << e.what();
+        return e.code().value();
+    }
+    return 0;
+}
+*/
+
+// Canceling asynchronous operations
+#include <boost/predef.h>
+
+#ifdef BOOST_OS_WINDOWS
+#define _WIN32_WINNT 0x0501
+
+#if _WIN32_WINNT <= 0x0501 // Windows Server 2003 or earlier.
+#define BOOST_ASIO_DISABLE_IOCP
+#define BOOST_ASIO_ENABLE_CANCELIO
+#endif
+#endif
+
+#include <boost/asio.hpp>
+#include <iostream>
+#include <thread>
+
+using namespace boost;
+
+int main()
+{
+    std::string raw_ip_address = "127.0.0.1";
+    unsigned short port_num = 3333;
+
+    try
+    {
+        asio::ip::tcp::endpoint
+            ep(asio::ip::address::from_string(raw_ip_address),
+               port_num);
+
+        asio::io_service ios;
+
+        std::shared_ptr<asio::ip::tcp::socket> sock(
+            new asio::ip::tcp::socket(ios, ep.protocol()));
+
+        sock->async_connect(ep,
+                            [sock](const boost::system::error_code &ec)
+                            {
+                                // if asynchronous operation has been
+                                // cancelled or an error occured during
+                                // execution, ec contains corresponding
+                                // error code.
+                                if (ec.value() != 0)
+                                {
+                                    if (ec == asio::error::operation_aborted)
+                                    {
+                                        std::cout << "Operation cancelled!";
+                                    }
+                                    else
+                                    {
+                                        std::cout << "Error occured!"
+                                                  << " Error code = "
+                                                  << ec.value()
+                                                  << ". Message: "
+                                                  << ec.message();
+                                    }
+                                    return;
+                                }
+                                // At this point the socket is connected and
+                                // can be used for communication with
+                                // remote application.
+                            });
+
+        // Starting a thread, which will be used
+        // to call the callback when asynchronous
+        // operation completes.
+        std::thread worker_thread([&ios]())
+        {
+            try
+            {
+                ios.run();
+            }
+            catch (system::system_error &e)
+            {
+                std::cout << "Error occured!"
+                          << " Error code = " << e.code()
+                          << ". Message: " << e.what();
+            }
+        }
+    }

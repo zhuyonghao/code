@@ -399,7 +399,7 @@ int main()
     }
     return 0;
 }
-*/
+
 
 // Canceling asynchronous operations
 #include <boost/predef.h>
@@ -407,7 +407,7 @@ int main()
 #ifdef BOOST_OS_WINDOWS
 #define _WIN32_WINNT 0x0501
 
-#if _WIN32_WINNT <= 0x0501 // Windows Server 2003 or earlier.
+#if _WIN32_WINNT <= 0x0502 // Windows Server 2003 or earlier.
 #define BOOST_ASIO_DISABLE_IOCP
 #define BOOST_ASIO_ENABLE_CANCELIO
 #endif
@@ -428,7 +428,7 @@ int main()
     {
         asio::ip::tcp::endpoint
             ep(asio::ip::address::from_string(raw_ip_address),
-               port_num);
+                port_num);
 
         asio::io_service ios;
 
@@ -436,47 +436,199 @@ int main()
             new asio::ip::tcp::socket(ios, ep.protocol()));
 
         sock->async_connect(ep,
-                            [sock](const boost::system::error_code &ec)
-                            {
-                                // if asynchronous operation has been
-                                // cancelled or an error occured during
-                                // execution, ec contains corresponding
-                                // error code.
-                                if (ec.value() != 0)
-                                {
-                                    if (ec == asio::error::operation_aborted)
-                                    {
-                                        std::cout << "Operation cancelled!";
-                                    }
-                                    else
-                                    {
-                                        std::cout << "Error occured!"
-                                                  << " Error code = "
-                                                  << ec.value()
-                                                  << ". Message: "
-                                                  << ec.message();
-                                    }
-                                    return;
-                                }
-                                // At this point the socket is connected and
-                                // can be used for communication with
-                                // remote application.
-                            });
+            [sock](const boost::system::error_code& ec)
+            {
+                // if asynchronous operation has been
+                // cancelled or an error occured during
+                // execution, ec contains corresponding
+                // error code.
+                if (ec.value() != 0)
+                {
+                    if (ec == asio::error::operation_aborted)
+                    {
+                        std::cout << "Operation cancelled!";
+                    }
+                    else
+                    {
+                        std::cout << "Error occured!"
+                            << " Error code = "
+                            << ec.value()
+                            << ". Message: "
+                            << ec.message();
+                    }
+                    return;
+                }
+                // At this point the socket is connected and
+                // can be used for communication with
+                // remote application.
+            }
+        );
 
         // Starting a thread, which will be used
         // to call the callback when asynchronous
         // operation completes.
-        std::thread worker_thread([&ios]())
-        {
-            try
+        std::thread worker_thread([&ios]()
             {
-                ios.run();
-            }
-            catch (system::system_error &e)
-            {
-                std::cout << "Error occured!"
-                          << " Error code = " << e.code()
-                          << ". Message: " << e.what();
-            }
-        }
+                try
+                {
+                    ios.run();
+                }
+                catch (system::system_error& e)
+                {
+                    std::cout << "Error occured!"
+                        << " Error code = " << e.code()
+                        << ". Message: " << e.what();
+                }
+            });
+
+        // Emulating delay
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+
+        // Cancelling the initiating operation.
+        sock->cancel();
+
+        // Waiting for the worker thread to complete.
+        worker_thread.join();
     }
+
+    catch (system::system_error& e)
+    {
+        std::cout << "Error occured! Error code = " << e.code()
+            << ". Message: " << e.what();
+
+        return e.code().value();
+    }
+    return 0;
+}
+
+
+//shutdown on the client application
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+using namespace boost;
+
+void communicate(asio::ip::tcp::socket& sock)
+{
+    // Allocating and filling the buffer with
+    // binary data.
+    const char request_buf[] = { 0x48, 0x65, 0x0, 0x6c, 0x6c, 0x6f };
+
+    // Sending the request data.
+    asio::write(sock, asio::buffer(request_buf));
+
+    // Shutting down the socket to let the
+    // server know that we've sent the whole
+    // request.
+    sock.shutdown(asio::socket_base::shutdown_send);
+
+    // We use extensible buffer for response
+    // because we don't know the size of the
+    // response message.
+    asio::streambuf response_buf;
+
+    system::error_code ec;
+    asio::read(sock, response_buf, ec);
+
+    if (ec == asio::error::eof)
+    {
+        // Whole response message has been received.
+        // Here we can handle it.
+    }
+    else
+    {
+        throw system::system_error(ec);
+    }
+}
+
+int main()
+{
+    std::string raw_ip_address = "127.0.0.1";
+    unsigned short port_num = 3333;
+
+    try
+    {
+        asio::ip::tcp::endpoint
+            ep(asio::ip::address::from_string(raw_ip_address),
+                port_num);
+
+        asio::io_service ios;
+
+        asio::ip::tcp::socket sock(ios, ep.protocol());
+
+        sock.connect(ep);
+
+        communicate(sock);
+    }
+    catch (system::system_error& e)
+    {
+        std::cout << "Error occured! Error code = " << e.code()
+            << ". Message: " << e.what();
+        return e.code().value();
+    }
+    return 0;
+}
+*/
+
+// shutdown on the server application
+#include <boost/asio.hpp>
+#include <iostream>
+
+using namespace boost;
+
+void processRequest(asio::ip::tcp::socket &sock)
+{
+    // We use extensible buffer because we don't
+    // know the size of the request message.
+    asio::streambuf request_buf;
+
+    system::error_code ec;
+
+    // Receiving the request.
+    asio::read(sock, request_buf, ec);
+
+    if (ec != asio::error::eof)
+        throw system::system_error(ec);
+
+    // Request received. Sending response.
+    // Allocating and filling the buffer with
+    // binary data.
+    const char response_buf[] = {0x48, 0x69, 0x21};
+
+    // Sending the request data.
+    asio::write(sock, asio::buffer(response_buf));
+
+    // Shutting down the socket to let the
+    // client know that we've sent the whole
+    // response.
+    sock.shutdown(asio::socket_base::shutdown_send);
+}
+
+int main()
+{
+    unsigned short port_num = 3333;
+
+    try
+    {
+        asio::ip::tcp::endpoint ep(asio::ip::address_v4::any(),
+                                   port_num);
+        asio::io_service ios;
+
+        asio::ip::tcp::acceptor acceptor(ios, ep);
+
+        asio::ip::tcp::socket sock(ios);
+
+        acceptor.accept(sock);
+
+        processRequest(sock);
+    }
+    catch (system::system_error &e)
+    {
+        std::cout << "Error occured! Error code = " << e.code()
+                  << ". Message: " << e.what();
+
+        return e.code().value();
+    }
+    return 0;
+}

@@ -87,8 +87,31 @@
 # my_tuple = (1, 2, 3, 4, 5)
 # print(my_tuple)
 
-numbers = (1, 2, 3, 4, 5)
-if 10 not in numbers:
-    print("Yes")
-else:
-    print("not")
+# numbers = (1, 2, 3, 4, 5)
+# if 10 not in numbers:
+#     print("Yes")
+# else:
+#     print("not")
+
+# values = [value for value in range(1, 11)]
+# for value in values:
+#     if value == 10:
+#         print(f"{value} is not exist.")
+#     else:
+#         print(value)
+# print("finish!")
+
+# values = []
+# if values:
+#     print("不为空")
+# else:
+#     print("为空")
+
+# values = list(range(1, 11))
+# values_to_find = [5, 9, 20, 2]
+# for value_to_find in values_to_find:
+#     if value_to_find in values:
+#         print(f"{value_to_find} exists!")
+#     else:
+#         print(f"{value_to_find} not exists.")
+# print("finish")

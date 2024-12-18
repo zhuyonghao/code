@@ -1,0 +1,43 @@
+<RCC>
+    <qresource prefix="/dance1">
+        <file>img/dance1/0.png</file>
+        <file>img/dance1/1.png</file>
+        <file>img/dance1/2.png</file>
+        <file>img/dance1/3.png</file>
+        <file>img/dance1/4.png</file>
+        <file>img/dance1/5.png</file>
+        <file>img/dance1/6.png</file>
+        <file>img/dance1/7.png</file>
+        <file>img/dance1/8.png</file>
+        <file>img/dance1/9.png</file>
+        <file>img/dance1/10.png</file>
+        <file>img/dance1/11.png</file>
+        <file>img/dance1/12.png</file>
+        <file>img/dance1/13.png</file>
+        <file>img/dance1/14.png</file>
+        <file>img/dance1/15.png</file>
+        <file>img/dance1/16.png</file>
+        <file>img/dance1/17.png</file>
+        <file>img/dance1/18.png</file>
+    </qresource>
+    <qresource prefix="/dance2">
+        <file>img/dance2/0.png</file>
+        <file>img/dance2/1.png</file>
+        <file>img/dance2/2.png</file>
+        <file>img/dance2/3.png</file>
+        <file>img/dance2/4.png</file>
+    </qresource>
+    <qresource prefix="/dance3">
+        <file>img/dance3/0.png</file>
+        <file>img/dance3/1.png</file>
+        <file>img/dance3/2.png</file>
+        <file>img/dance3/3.png</file>
+        <file>img/dance3/4.png</file>
+        <file>img/dance3/5.png</file>
+        <file>img/dance3/6.png</file>
+        <file>img/dance3/7.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>img/icon.jpg</file>
+    </qresource>
+</RCC>
